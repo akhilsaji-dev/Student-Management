@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const API = "http://localhost:5000/api/students";
-
 function StudentCRUD() {
+
+  const API = "http://localhost:5000/api/students";
 
   const [students, setStudents] = useState([]);
   const [form, setForm] = useState({
@@ -15,13 +15,13 @@ function StudentCRUD() {
 
   const [editingId, setEditingId] = useState(null);
 
-  // FETCH STUDENTS
+  // ================= READ =================
   const fetchStudents = async () => {
     try {
       const res = await axios.get(API);
       setStudents(res.data);
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
@@ -29,7 +29,7 @@ function StudentCRUD() {
     fetchStudents();
   }, []);
 
-  // HANDLE INPUT
+  // ================= INPUT =================
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -37,27 +37,46 @@ function StudentCRUD() {
     });
   };
 
-  // CREATE or UPDATE
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  // ================= CREATE =================
+  const handleCreate = async () => {
     try {
-      if (editingId) {
-        await axios.put(`${API}/${editingId}`, form);
-        setEditingId(null);
-      } else {
-        await axios.post(API, form);
-      }
-
-      setForm({ name: "", email: "", course: "", age: "" });
+      await axios.post(API, form);
       fetchStudents();
-
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
-  // EDIT
+  // ================= UPDATE =================
+  const handleUpdate = async () => {
+    try {
+      await axios.put(`${API}/${editingId}`, form);
+      setEditingId(null);
+      fetchStudents();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // ================= SUBMIT =================
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (editingId) {
+      handleUpdate();
+    } else {
+      handleCreate();
+    }
+
+    setForm({
+      name: "",
+      email: "",
+      course: "",
+      age: ""
+    });
+  };
+
+  // ================= EDIT =================
   const handleEdit = (student) => {
     setForm({
       name: student.name,
@@ -68,73 +87,59 @@ function StudentCRUD() {
     setEditingId(student._id);
   };
 
-  // DELETE
+  // ================= DELETE =================
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${API}/${id}`);
       fetchStudents();
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
   return (
     <div className="container mt-4">
 
-      <h2 className="text-center mb-4">Student Management System</h2>
+      <h2 className="text-center mb-3">Student CRUD</h2>
 
       {/* FORM */}
-      <form onSubmit={handleSubmit} className="card p-4 shadow mb-4">
+      <form onSubmit={handleSubmit} className="card p-3 mb-3">
 
-        <div className="row">
-          <div className="col-md-6 mb-3">
-            <input
-              type="text"
-              name="name"
-              placeholder="Full Name"
-              className="form-control"
-              value={form.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <input
+          type="text"
+          name="name"
+          placeholder="Name"
+          className="form-control mb-2"
+          value={form.name}
+          onChange={handleChange}
+        />
 
-          <div className="col-md-6 mb-3">
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              className="form-control"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          className="form-control mb-2"
+          value={form.email}
+          onChange={handleChange}
+        />
 
-          <div className="col-md-6 mb-3">
-            <input
-              type="text"
-              name="course"
-              placeholder="Course"
-              className="form-control"
-              value={form.course}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <input
+          type="text"
+          name="course"
+          placeholder="Course"
+          className="form-control mb-2"
+          value={form.course}
+          onChange={handleChange}
+        />
 
-          <div className="col-md-6 mb-3">
-            <input
-              type="number"
-              name="age"
-              placeholder="Age"
-              className="form-control"
-              value={form.age}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        </div>
+        <input
+          type="number"
+          name="age"
+          placeholder="Age"
+          className="form-control mb-2"
+          value={form.age}
+          onChange={handleChange}
+        />
 
         <button className="btn btn-primary w-100">
           {editingId ? "Update Student" : "Add Student"}
@@ -142,51 +147,182 @@ function StudentCRUD() {
 
       </form>
 
-
       {/* TABLE */}
-      <div className="card shadow">
-        <div className="card-body">
-          <table className="table table-striped">
+      <table className="table table-bordered">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Course</th>
+            <th>Age</th>
+            <th>Action</th>
+          </tr>
+        </thead>
 
-            <thead className="table-dark">
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Course</th>
-                <th>Age</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
+        <tbody>
+          {students.map((student) => (
+            <tr key={student._id}>
+              <td>{student.name}</td>
+              <td>{student.email}</td>
+              <td>{student.course}</td>
+              <td>{student.age}</td>
+              <td>
+                <button
+                  className="btn btn-warning btn-sm me-2"
+                  onClick={() => handleEdit(student)}
+                >
+                  Edit
+                </button>
 
-            <tbody>
-              {students.map((student) => (
-                <tr key={student._id}>
-                  <td>{student.name}</td>
-                  <td>{student.email}</td>
-                  <td>{student.course}</td>
-                  <td>{student.age}</td>
-                  <td>
-                    <button
-                      className="btn btn-warning btn-sm me-2"
-                      onClick={() => handleEdit(student)}
-                    >
-                      Edit
-                    </button>
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={() => handleDelete(student._id)}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => handleDelete(student._id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+    </div>
+  );
+}
 
-          </table>
-        </div>
-      </div>
+export default StudentCRUD;
+
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+
+function StudentCRUD() {
+
+  const API = "http://localhost:5000/api/students";
+
+  const [students, setStudents] = useState([]);
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    course: "",
+    age: ""
+  });
+
+  // ================= READ =================
+  const fetchStudents = async () => {
+    try {
+      const res = await axios.get(API);
+      setStudents(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
+  // ================= INPUT =================
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  // ================= INSERT =================
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await axios.post(API, form);
+
+      // Clear form
+      setForm({
+        name: "",
+        email: "",
+        course: "",
+        age: ""
+      });
+
+      fetchStudents(); // reload list
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <div className="container mt-4">
+
+      <h2 className="text-center mb-3">Insert Student</h2>
+
+      {/* FORM */}
+      <form onSubmit={handleSubmit} className="card p-3 mb-3">
+
+        <input
+          type="text"
+          name="name"
+          placeholder="Name"
+          className="form-control mb-2"
+          value={form.name}
+          onChange={handleChange}
+        />
+
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          className="form-control mb-2"
+          value={form.email}
+          onChange={handleChange}
+        />
+
+        <input
+          type="text"
+          name="course"
+          placeholder="Course"
+          className="form-control mb-2"
+          value={form.course}
+          onChange={handleChange}
+        />
+
+        <input
+          type="number"
+          name="age"
+          placeholder="Age"
+          className="form-control mb-2"
+          value={form.age}
+          onChange={handleChange}
+        />
+
+        <button className="btn btn-primary w-100">
+          Add Student
+        </button>
+
+      </form>
+
+      {/* DISPLAY LIST */}
+      <table className="table table-bordered">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Course</th>
+            <th>Age</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {students.map((student) => (
+            <tr key={student._id}>
+              <td>{student.name}</td>
+              <td>{student.email}</td>
+              <td>{student.course}</td>
+              <td>{student.age}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
     </div>
   );
