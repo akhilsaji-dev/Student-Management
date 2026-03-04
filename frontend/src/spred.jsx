@@ -1,6 +1,9 @@
 import React from "react";
 
 const Spred = () => {
+
+
+
   // Original object
   const form = {
     name: "Akhil",
@@ -31,6 +34,12 @@ const Spred = () => {
       <p>Email: {updatedForm.email}</p>
     </div>
   );
+
+  //spread example
+const original = { a: 1, b: 2 };
+const copy = { ...original };
+console.log(copy); // Output: { a: 1, b: 2 }
+
 };
 
 export default Spred;
