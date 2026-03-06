@@ -1,11 +1,14 @@
 import React from "react";
-import StudentCRUD from "./StudentCRUD.jsx";
-import Spred from "./spred.jsx";
+// import StudentView from "./studentview";
+// import UseEffect from "./useeffect";
+import StudentCRUD from "./StudentCRUD";
 function App() {
   return (
     <div>
+     {/* < StudentView /> */}
+      {/* <UseEffect /> */}
       <StudentCRUD />
-      < Spred />
+
     </div>
   );
 }

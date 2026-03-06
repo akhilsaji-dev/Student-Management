@@ -13,8 +13,6 @@ function StudentCRUD() {
     age: ""
   });
 
-  const [editingId, setEditingId] = useState(null);
-
   // ================= READ =================
   const fetchStudents = async () => {
     try {
@@ -24,10 +22,10 @@ function StudentCRUD() {
       console.log(error);
     }
   };
-
+ 
   useEffect(() => {
     fetchStudents();
-  }, []);
+  },[]); //[] 
 
   // ================= INPUT =================
   const handleChange = (e) => {
@@ -38,60 +36,18 @@ function StudentCRUD() {
   };
 
   // ================= CREATE =================
-  const handleCreate = async () => {
-    try {
-      await axios.post(API, form);
-      fetchStudents();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // ================= UPDATE =================
-  const handleUpdate = async () => {
-    try {
-      await axios.put(`${API}/${editingId}`, form); // Update student by ID,$ use So ${editingId} inserts the variable value inside the string.
-      setEditingId(null);
-      fetchStudents();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // ================= SUBMIT =================
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (editingId) {
-      handleUpdate();
-    } else {
-      handleCreate();
-    }
-
-    setForm({
-      name: "",
-      email: "",
-      course: "",
-      age: ""
-    });
-  };
-
-  // ================= EDIT =================
-  const handleEdit = (student) => {
-    setForm({
-      name: student.name,
-      email: student.email,
-      course: student.course,
-      age: student.age
-    });
-    setEditingId(student._id);
-  };
-
-  // ================= DELETE =================
-  const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API}/${id}`);
-      fetchStudents();
+      await axios.post(API, form);
+      fetchStudents(); // refresh list
+      setForm({
+        name: "",
+        email: "",
+        course: "",
+        age: ""
+      });
     } catch (error) {
       console.log(error);
     }
@@ -100,7 +56,7 @@ function StudentCRUD() {
   return (
     <div className="container mt-4">
 
-      <h2 className="text-center mb-3">Student CRUD</h2>
+      <h2 className="text-center mb-3">Student Insert & View</h2>
 
       {/* FORM */}
       <form onSubmit={handleSubmit} className="card p-3 mb-3">
@@ -142,8 +98,7 @@ function StudentCRUD() {
         />
 
         <button className="btn btn-primary w-100">
-          {editingId ? "Update Student" : "Add Student"} 
-           {/* Change button text based on whether we're editing or creating */}
+          Add Student
         </button>
 
       </form>
@@ -156,7 +111,6 @@ function StudentCRUD() {
             <th>Email</th>
             <th>Course</th>
             <th>Age</th>
-            <th>Action</th>
           </tr>
         </thead>
 
@@ -167,21 +121,6 @@ function StudentCRUD() {
               <td>{student.email}</td>
               <td>{student.course}</td>
               <td>{student.age}</td>
-              <td>
-                <button
-                  className="btn btn-warning btn-sm me-2"
-                  onClick={() => handleEdit(student)}
-                >
-                  Edit
-                </button>
-
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={() => handleDelete(student._id)}
-                >
-                  Delete
-                </button>
-              </td>
             </tr>
           ))}
         </tbody>
@@ -192,7 +131,3 @@ function StudentCRUD() {
 }
 
 export default StudentCRUD;
-
-
-
-
