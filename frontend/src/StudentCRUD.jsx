@@ -56,7 +56,7 @@ function StudentCRUD() {
     } catch (error) {
       console.log(error);
     }
-  };
+  }; 
 
   // ================= SUBMIT =================
   const handleSubmit = (e) => {
@@ -165,7 +165,7 @@ function StudentCRUD() {
             <tr key={student._id}>
               <td>{student.name}</td>
               <td>{student.email}</td>
-              <td>{student.course}</td>
+              <td>{student.course}</td> 
               <td>{student.age}</td>
               <td>
                 <button

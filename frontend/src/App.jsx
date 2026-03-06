@@ -7,7 +7,7 @@ function App() {
     <div>
      {/* < StudentView /> */}
       {/* <UseEffect /> */}
-      <StudentCRUD />
+      <StudentCRUD /> 
 
     </div>
   );
